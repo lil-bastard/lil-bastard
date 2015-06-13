@@ -1,0 +1,64 @@
+#!/usr/bin/env node
+
+var program = require('commander');
+var inquirer = require('inquirer');
+var path = require('path');
+var config = require(process.cwd() + '/bastard.config.js');
+
+var cliVersion = require(path.resolve(__dirname + '/../package.json')).version;
+
+program
+  .version(cliVersion);
+
+program
+  .command('finalize [tableName]')
+  .description('finalize a table by converting the json data to real columns')
+  .action(function(tableName) {
+    pg.run('select * from ' + tableName + ' limit 1', function(err, result) {
+      console.log('Enter column types of each member of the object');
+      var rowsToAdd = Object.keys(result.rows[0]._data);
+      var questions = rowsToAdd.map(function(columnName) {
+        return {
+          name: columnName,
+          message: columnName,
+        }
+      });
+      inquirer.prompt(questions, function(answers) {
+        console.log(answers);
+      });
+    });
+  });
+
+program
+  .command('create [tableName')
+  .description('Create table')
+  .action(function(tableName) {
+    pg._tableExists(tableName).then(function(exists) {
+      if(exists) {
+        console.log('ERROR: Table "' + tableName + '" already exists');
+      } else {
+        pg.createTable(tableName, function(result) {
+          console.log('SUCCESS: Created table "' + tableName + '"');
+        });
+      }
+    });
+  });
+
+program
+  .command('user_scope [tableName]')
+  .description('Add user scoping to the table')
+  .action(function(tableName) {
+    config.getDatabase().addUserScope(tableName).then(function() {
+      console.log('SUCCESS: Added user scope to "' + tableName + '"');
+    });
+  });
+
+program
+  .command('list [tableName]')
+  .description('list tables and current scopeing')
+  .action(function() {
+    config.getDatabase().getScope().then(console.log);
+  });
+
+
+program.parse(process.argv);

@@ -1,0 +1,21 @@
+{
+  "name": "lil-bastard",
+  "version": "1.0.0",
+  "description": "A fast prototyping framework with an exit",
+  "main": "src/lil-bastard.js",
+  "bin": {
+    "bastard": "./bin/bastard"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Paul Navasard",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^2.8.1",
+    "googleapis": "^2.0.5",
+    "inquirer": "^0.8.5",
+    "nconf": "^0.7.1",
+    "request": "^2.57.0"
+  }
+}
